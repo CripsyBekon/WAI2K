@@ -126,6 +126,18 @@ abstract class MapRunner(
         logger.info("Resupply complete")
     }
 
+    protected suspend fun retreatEchelon(label: String, region: AndroidRegion) {
+        logger.info("Retreating echelon at $label")
+        logger.info("Selecting echelon")
+        region.clickRandomly(); delay(300)
+
+        logger.info("Retreating")
+        mapRunnerRegions.retreat.clickRandomly()
+        logger.info("Confirming Retreat")
+        mapRunnerRegions.confirm.clickRandomly()
+        logger.info("Retreat Successful")
+    }
+
     /**
      * Waits for the G&K splash animation that appears at the beginning of the turn to appear
      * and waits for it to disappear
@@ -144,7 +156,7 @@ abstract class MapRunner(
                     logger.info("Battle ${_battles++} complete, clicking through battle results")
                     delay(400)
                     val l = battleEndClickRegion.randomLocation()
-                    repeat(Random.nextInt(7,9)) { region.click(l); yield() }
+                    repeat(Random.nextInt(7, 9)) { region.click(l); yield() }
                 } else yield()
             }
         }
@@ -173,7 +185,7 @@ abstract class MapRunner(
                 logger.info("Battle ${_battles++} complete, clicking through battle results")
                 delay(400)
                 val l = battleEndClickRegion.randomLocation()
-                repeat(Random.nextInt(7,9)) { region.click(l); yield() }
+                repeat(Random.nextInt(7, 9)) { region.click(l); yield() }
                 battlesPassed++
             } else yield()
         }
@@ -201,6 +213,27 @@ abstract class MapRunner(
         logger.info("Back at combat menu")
         scriptStats.sortiesDone += 1
         _battles = 1
+    }
+
+    protected suspend fun handleNightBattleResults() {
+        logger.info("Night battle terminated, returning to home")
+        val home = GameLocation.mappings(config)[LocationId.HOME]!!
+
+        while (isActive) {
+            if (home.isInRegion(region)) break
+        }
+        logger.info("Back at home")
+        scriptStats.sortiesDone += 1
+        _battles = 1
+
+    }
+
+    protected suspend fun terminateBattle() {
+        logger.info("Battle Complete, forcefully terminating mission")
+        logger.info("Selecting the terminate mission button")
+        mapRunnerRegions.terminate.clickRandomly(); yield()
+        logger.info("Selecting the Terminate button to return to home")
+        mapRunnerRegions.terminateToHome.clickRandomly(); yield()
     }
 
     private fun isInBattle() = pauseButtonRegion.has("combat/battle/pause.png", 0.9)
