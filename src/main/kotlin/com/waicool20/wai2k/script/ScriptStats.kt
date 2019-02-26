@@ -19,11 +19,14 @@
 
 package com.waicool20.wai2k.script
 
+import com.waicool20.wai2k.config.Wai2KProfile
+
 data class ScriptStats(
         var logisticsSupportReceived: Int = 0,
         var logisticsSupportSent: Int = 0,
         var sortiesDone: Int = 0,
         var enhancementsDone: Int = 0,
+        var equipsUsedForEnhancement: Int = 0,
         var dollsUsedForEnhancement: Int = 0,
         var disassemblesDone: Int = 0,
         var dollsUsedForDisassembly: Int = 0,
@@ -35,6 +38,7 @@ data class ScriptStats(
         logisticsSupportSent = 0
         sortiesDone = 0
         enhancementsDone = 0
+        equipsUsedForEnhancement = 0
         dollsUsedForEnhancement = 0
         disassemblesDone = 0
         dollsUsedForDisassembly = 0
