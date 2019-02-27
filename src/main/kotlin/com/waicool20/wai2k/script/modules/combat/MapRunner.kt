@@ -126,6 +126,12 @@ abstract class MapRunner(
         logger.info("Resupply complete")
     }
 
+    /**
+     * Retreat the echelon from the heliport/command post.
+     *
+     * @param label Destination label, used for logging
+     * @param region Click region of the destination (Heliport, Command post etc.)
+     */
     protected suspend fun retreatEchelon(label: String, region: AndroidRegion) {
         logger.info("Retreating echelon at $label")
         logger.info("Selecting echelon")
@@ -196,6 +202,7 @@ abstract class MapRunner(
         repeat(Random.nextInt(2, 3)) { mapRunnerRegions.endBattle.clickRandomly() }
     }
 
+
     /**
      * Clicks through the battle results and waits for the game to return to the combat menu
      */
@@ -215,6 +222,10 @@ abstract class MapRunner(
         _battles = 1
     }
 
+    /**
+     *  handles night battle termination that would change the location to home
+     */
+
     protected suspend fun handleNightBattleResults() {
         logger.info("Night battle terminated, returning to home")
         val home = GameLocation.mappings(config)[LocationId.HOME]!!
@@ -227,6 +238,10 @@ abstract class MapRunner(
         _battles = 1
 
     }
+
+    /**
+     * Terminate button to end night battle dragging
+     */
 
     protected suspend fun terminateBattle() {
         logger.info("Battle Complete, forcefully terminating mission")

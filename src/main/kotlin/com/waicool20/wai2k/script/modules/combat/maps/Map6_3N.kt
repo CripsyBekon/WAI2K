@@ -49,11 +49,16 @@ class Map6_3N(
         deployEchelons(
                 HELIPORT to region.subRegion(1277, 578, 60, 60)
         )
+        delay(200)
         resupplyEchelon(HELIPORT, region.subRegion(1277, 578, 60, 60))
+        delay(200)
         retreatEchelon(HELIPORT, region.subRegion(1277, 578, 60, 60))
+        delay(1500)
         deploy2ndEchelon()
+        delay(500)
         switchDolls()
         retreatEchelon(HELIPORT, region.subRegion(1277, 578, 60, 60))
+        delay(1000)
         terminateBattle()
         handleNightBattleResults()
     }
@@ -77,11 +82,16 @@ class Map6_3N(
     }
 
     private suspend fun deploy2ndEchelon() {
-        logger.info("Clicking the echelon underneath")
+        logger.info("Double Clicking on the Heliport")
+        region.subRegion(1277, 578, 60, 60)
+                .clickRandomly(); yield()
+        region.subRegion(1277, 578, 60, 60)
+                .clickRandomly(); yield()
+        logger.info("Selecting the echelon underneath")
         region.subRegion(127, 406, 155, 85)
                 .clickRandomly(); yield()
         mapRunnerRegions.deploy.clickRandomly()
-        logger.info("Deployment Sucessful")
+        logger.info("Deployment Successful")
     }
 
     private suspend fun switchDolls() {
@@ -93,6 +103,6 @@ class Map6_3N(
         delay(200)
         region.subRegion(1061, 579, 200, 55)
                 .clickRandomly(); yield()
-        delay(500)
+        delay(1500)
     }
 }
