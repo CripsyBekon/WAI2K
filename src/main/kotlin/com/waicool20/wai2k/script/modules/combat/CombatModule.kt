@@ -477,7 +477,7 @@ class CombatModule(
                 return
             }
 
-            region.subRegion(1185, 696, 278, 95).findOrNull("combat/enhancement.png")?.apply {
+            region.subRegion(1185, 696, 278, 95).findOrNull("combat/equipEnhancement.png")?.apply {
                 logger.info("Equip limit reached, cancelling sortie")
                 clickRandomly()
                 gameState.equipOverflow = true
