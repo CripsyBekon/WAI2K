@@ -330,7 +330,7 @@ class FactoryModule(
                 break
             } else {
                 okButton.clickRandomly()
-                scriptStats.enhancementsDone += 1
+                scriptStats.equipEnhancementsDone += 1
             }
 
             delay(200)
@@ -340,7 +340,7 @@ class FactoryModule(
 
         logger.info("Enhancing using 3 star equipment")
         logger.info("Applying filters")
-        applyDollFilters(3)
+        applyEquipFilters(3)
         delay(750)
 
         while (isActive) {
@@ -357,22 +357,20 @@ class FactoryModule(
                     .also { logger.info("Found ${it.size} that can be enhanced") }
                     .map { region.subRegion(it.x - 102, it.y, 246, 433) }
             if (equip.isEmpty()) {
-                // Click cancel if no dolls could be used for enhancement
+                // Click cancel if no equip could be used for enhancement
                 region.subRegion(120, 0, 205, 144).clickRandomly()
                 break
             }
-            // Select all the dolls
+            // Select all the equips
             region.mouseDelay(0.0) {
                 equip.sortedBy { it.y * 10 + it.x }.forEach { it.clickRandomly() }
             }
             // Click ok
             region.subRegion(1767, 880, 252, 185).find("research/ok.png").clickRandomly(); yield()
-            // Click disassemble button
+            // Click ok button
             region.subRegion(1723, 913, 214, 82).clickRandomly(); delay(300)
-            // Click confirm
-            region.subRegion(1100, 688, 324, 161).find("confirm.png").clickRandomly(); delay(200)
             // Update stats
-            scriptStats.disassemblesDone += 1
+            scriptStats.equipEnhancementsDone += 1
             // Can break if disassembled count is less than 12
             if (equip.size < 12) break
             // Wait for menu to settle
@@ -385,7 +383,7 @@ class FactoryModule(
 
         logger.info("Enhancing using 4 star equipment")
         logger.info("Applying filters")
-        applyDollFilters(4)
+        applyEquipFilters(4)
         delay(750)
 
         while (isActive) {
@@ -402,20 +400,22 @@ class FactoryModule(
                     .also { logger.info("Found ${it.size} that can be enhanced") }
                     .map { region.subRegion(it.x - 102, it.y, 246, 433) }
             if (equip.isEmpty()) {
-                // Click cancel if no dolls could be used for enhancement
+                // Click cancel if no equip could be used for enhancement
                 region.subRegion(120, 0, 205, 144).clickRandomly()
                 break
             }
-            // Select all the dolls
+            // Select all the equips
             region.mouseDelay(0.0) {
                 equip.sortedBy { it.y * 10 + it.x }.forEach { it.clickRandomly() }
             }
             // Click ok
             region.subRegion(1767, 880, 252, 185).find("research/ok.png").clickRandomly(); yield()
-            // Click disassemble button
+            // Click ok button
             region.subRegion(1723, 913, 214, 82).clickRandomly(); delay(300)
+            // Click confirm
+            region.subRegion(1100, 688, 324, 161).find("confirm.png").clickRandomly(); delay(200)
             // Update stats
-            scriptStats.disassemblesDone += 1
+            scriptStats.equipEnhancementsDone += 1
             // Can break if disassembled count is less than 12
             if (equip.size < 12) break
             // Wait for menu to settle

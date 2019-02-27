@@ -23,6 +23,7 @@ import com.waicool20.wai2k.android.AndroidRegion
 import com.waicool20.wai2k.config.Wai2KConfig
 import com.waicool20.wai2k.config.Wai2KProfile
 import com.waicool20.wai2k.game.DollFilterRegions
+import com.waicool20.wai2k.game.EquipFilterRegions
 import com.waicool20.wai2k.game.DollType
 import com.waicool20.wai2k.script.Navigator
 import com.waicool20.wai2k.script.ScriptRunner
@@ -51,6 +52,7 @@ abstract class ScriptModule(
     abstract suspend fun execute()
 
     protected val dollFilterRegions by lazy { DollFilterRegions(region) }
+    protected val equipFilterRegions by lazy { EquipFilterRegions(region) }
 
     /**
      * Applies the given corresponding doll filters, only works when the filter button
@@ -83,6 +85,32 @@ abstract class ScriptModule(
 
             logger.info("Confirming filters")
             dollFilterRegions.confirm.clickRandomly(); yield()
+        }
+    }
+
+    /**
+     *
+     */
+
+    protected suspend fun applyEquipFilters(stars: Int? = null, reset: Boolean = false) {
+        if (stars == null && !reset) return
+        region.mouseDelay(0.0) {
+            equipFilterRegions.filter.clickRandomly()
+            delay(500)
+
+            if (reset) {
+                logger.info("Resetting filters")
+                equipFilterRegions.reset.clickRandomly(); yield()
+                equipFilterRegions.filter.clickRandomly()
+                delay(500)
+            }
+            if (stars != null) {
+                logger.info("Applying $stars stars filter")
+                equipFilterRegions.starRegions[stars]?.clickRandomly(); yield()
+            }
+
+            logger.info("Confirming filters")
+            equipFilterRegions.confirm.clickRandomly(); yield()
         }
     }
 
