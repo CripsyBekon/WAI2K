@@ -229,9 +229,15 @@ abstract class MapRunner(
     protected suspend fun handleNightBattleResults() {
         logger.info("Night battle terminated, returning to home")
         val home = GameLocation.mappings(config)[LocationId.HOME]!!
-
+        val dailyReset = GameLocation.mappings(config)[LocationId.IMPORTANT_INFORMATION]!!
         while (isActive) {
-            if (home.isInRegion(region)) break
+            if (home.isInRegion(region)) {
+                logger.info("At home")
+                break
+            } else if (dailyReset.isInRegion(region)) {
+                logger.info("Daily Reset has occurred")
+                break
+            }
         }
         logger.info("Back at home")
         scriptStats.sortiesDone += 1
@@ -241,14 +247,14 @@ abstract class MapRunner(
 
     /**
      * Terminate button to end night battle dragging
-     */
 
+     */
     protected suspend fun terminateBattle() {
         logger.info("Battle Complete, forcefully terminating mission")
-        logger.info("Selecting the terminate mission button")
         mapRunnerRegions.terminate.clickRandomly(); yield()
-        logger.info("Selecting the Terminate button to return to home")
+        logger.info("Selecting the terminate mission button")
         mapRunnerRegions.terminateToHome.clickRandomly(); yield()
+        logger.info("Selecting the Terminate button to return to home")
     }
 
     private fun isInBattle() = pauseButtonRegion.has("combat/battle/pause.png", 0.9)
