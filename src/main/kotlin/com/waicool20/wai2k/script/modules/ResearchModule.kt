@@ -81,7 +81,7 @@ class ResearchModule(
             }
 
             logger.info("Selecting first available equip for enhancement")
-            // Randomly select a equip on the screen for enhancement
+            //Selects the first equip on the screen for enhancement
             while (isActive) {
                 val equip = region.findAllOrEmpty("research/5star.png")
                         .also { logger.info("Found ${it.size} equips on screen available for enhancement") }
@@ -103,136 +103,216 @@ class ResearchModule(
 
             delay(400)
 
+            val outOfEquip = region.subRegion(912, 718, 327, 172).findOrNull("close.png")
+
             // Click "Select Equip" button
-            logger.info("Selecting equipment used for enhancement")
+            logger.info("Finding 2 star enhancement fodder")
             region.subRegion(791, 219, 1125, 441).find("research/select.png").clickRandomly()
             delay(200)
 
+            if (outOfEquip != null) {
+                break
+            }
+
+            //Check for any 2 star equipment in region
             val twoStars = region.subRegion(123, 155, 261, 454).findOrNull("research/2star.png")
-
-            // Click smart select button
-            logger.info("Using smart select")
-            region.subRegion(1770, 900, 240, 150).clickRandomly(); yield()
-
-            // Confirm equip fodder selection
-            val okButton = region.findOrNull("research/ok.png")
             if (twoStars == null) {
                 // Click cancel if no equipment could be used for enhancement
-                region.subRegion(120, 0, 205, 144).clickRandomly()
                 logger.info("out of 2 star equipments")
+                region.subRegion(120, 0, 205, 144).clickRandomly()
+                logger.info("returning to menu")
+                delay(300)
                 break
-            } else if (okButton != null) {
-                okButton.clickRandomly()
+            } else {
+                // Click smart select button
+                logger.info("Using smart select")
+                region.subRegion(1770, 900, 240, 150).clickRandomly(); yield()
+
+                //Click on the OK button to go back
+                logger.info("Clicking the OK button")
+                region.find("research/ok.png").clickRandomly(); yield()
                 scriptStats.equipEnhancementsDone += 1
             }
 
             delay(200)
-            // Click ok button
+
+            // Click ok button to confirm enhancement
+            logger.info("Confirming equip enhancement")
             region.subRegion(1723, 913, 214, 82).clickRandomly(); delay(2600)
         }
 
+        delay(500)
 
-        // Click "Select Equip" button
-        logger.info("Selecting equipment used for enhancement")
-        region.subRegion(791, 219, 1125, 441).find("research/select.png").clickRandomly()
-        delay(200)
+        if (region.has("close.png")) {
 
-        logger.info("Enhancing using 3 star equipment")
-        logger.info("Applying filters")
-        applyEquipFilters(3)
-        delay(750)
+        } else {
 
-        while (isActive) {
-            statUpdateJobs += updateEquip(region.subRegion(1750, 515, 290, 70).takeScreenshot()) { count ->
-                val c = count[0].toInt()
-                oldEquipCount?.get(0)?.toIntOrNull()?.let {
-                    equipsUsedForEnhancement.getAndAdd(it - c)
-                }
-                oldEquipCount = count
-                c >= count[1].toInt()
-            }
+            val selectEquipButton = region.subRegion(479, 432, 240, 353)
+            // Click select equip
+            selectEquipButton.clickRandomly(); delay(500)
 
-            val equip = region.findAllOrEmpty("research/3star.png")
-                    .also { logger.info("Found ${it.size} that can be enhanced") }
-                    .map { region.subRegion(it.x - 104, it.y, 244, 432) }
-            if (equip.isEmpty()) {
-                // Click cancel if no equip could be used for enhancement
-                region.subRegion(120, 0, 205, 144).clickRandomly()
-                break
-            }
-            // Select all the equips
-            region.mouseDelay(0.0) {
-                equip.sortedBy { it.y * 10 + it.x }.forEach { it.clickRandomly() }
-            }
-            // Click ok
-            region.subRegion(1767, 880, 252, 185).find("research/ok.png").clickRandomly(); yield()
-            // Click ok button
-            region.subRegion(1723, 913, 214, 82).clickRandomly(); delay(2600)
-            // Update stats
-            // Can break if disassembled count is less than 12
-            if (equip.size < 12) {
-                scriptStats.equipEnhancementsDone += 1
-                break
-            }
-            // Wait for menu to settle
-            region.subRegion(791, 219, 1125, 441)
-                    .waitSuspending("research/select.png", 10)?.let {
-                        it.clickRandomly()
-                        delay(750)
+            while (isActive) {
+                statUpdateJobs += updateEquip(region.subRegion(1750, 515, 290, 70).takeScreenshot()) { count ->
+                    val c = count[0].toInt()
+                    oldEquipCount?.get(0)?.toIntOrNull()?.let {
+                        equipsUsedForEnhancement.getAndAdd(it - c)
                     }
-        }
-
-        // Click "Select Equip" button
-        logger.info("Selecting equipment used for enhancement")
-        region.subRegion(791, 219, 1125, 441).find("research/select.png").clickRandomly()
-        delay(200)
-
-        logger.info("Enhancing using 4 star equipment")
-        logger.info("Applying filters")
-        applyEquipFilters(4)
-        delay(750)
-
-        while (isActive) {
-            statUpdateJobs += updateEquip(region.subRegion(1750, 515, 290, 70).takeScreenshot()) { count ->
-                val c = count[0].toInt()
-                oldEquipCount?.get(0)?.toIntOrNull()?.let {
-                    equipsUsedForEnhancement.getAndAdd(it - c)
+                    oldEquipCount = count
+                    c >= count[1].toInt()
                 }
-                oldEquipCount = count
-                c >= count[1].toInt()
-            }
 
-            val equip = region.findAllOrEmpty("research/4star.png")
-                    .also { logger.info("Found ${it.size} that can be enhanced") }
-                    .map { region.subRegion(it.x - 104, it.y, 244, 432) }
-            if (equip.isEmpty()) {
-                // Click cancel if no equip could be used for enhancement
-                region.subRegion(120, 0, 205, 144).clickRandomly()
-                break
-            }
-            // Select all the equips
-            region.mouseDelay(0.0) {
-                equip.sortedBy { it.y * 10 + it.x }.forEach { it.clickRandomly() }
-            }
-            // Click ok
-            region.subRegion(1767, 880, 252, 185).find("research/ok.png").clickRandomly(); yield()
-            // Click ok button
-            region.subRegion(1723, 913, 214, 82).clickRandomly(); delay(2600)
-            // Click confirm
-            region.subRegion(1100, 688, 324, 161).find("confirm.png").clickRandomly(); delay(200)
-            // Update stats
-            // Can break if disassembled count is less than 12
-            if (equip.size < 12) {
-                scriptStats.equipEnhancementsDone += 1
-                break
-            }
-            // Wait for menu to settle
-            region.subRegion(791, 219, 1125, 441)
-                    .waitSuspending("research/select.png", 10)?.let {
-                        it.clickRandomly()
-                        delay(750)
+
+                logger.info("Selecting first available equip for enhancement")
+                // Selects the first equip on the screen for enhancement
+                while (isActive) {
+                    val equip = region.findAllOrEmpty("research/5star.png")
+                            .also { logger.info("Found ${it.size} equips on screen available for enhancement") }
+                            // Map lock region to doll region
+                            .map { region.subRegion(it.x - 104, it.y, 244, 432) }
+                            // Prioritize higher level dolls
+                            .sortedBy { it.y * 10 + it.x }
+                            .firstOrNull()
+                    if (equip == null) {
+                        logger.info("No equipments that can be enhanced found")
+                        // Click cancel
+                        region.subRegion(120, 0, 205, 144).clickRandomly()
+                        return
+                    } else {
+                        equip.clickRandomly()
+                        break
                     }
+                }
+
+                // Click "Select Equip" button
+                logger.info("Finding 3 star enhancement fodder")
+                region.subRegion(791, 219, 1125, 441).find("research/select.png").clickRandomly()
+                delay(200)
+
+                logger.info("Enhancing using 3 star equipment")
+                logger.info("Applying filters")
+                applyEquipFilters(3)
+                delay(750)
+
+                val equip = region.findAllOrEmpty("research/3star.png")
+                        .also { logger.info("Found ${it.size} that can be enhanced") }
+                        .map { region.subRegion(it.x - 104, it.y, 244, 432) }
+
+                // Select all the equips
+                region.mouseDelay(0.0) {
+                    equip.sortedBy { it.y * 10 + it.x }.forEach { it.clickRandomly() }
+                }
+                // Click ok
+                logger.info("Confirming Selection")
+                region.subRegion(1767, 880, 252, 185).find("research/ok.png").clickRandomly(); yield()
+                // Click ok button
+                logger.info("Confirming enhancement")
+                region.subRegion(1723, 913, 214, 82).clickRandomly(); delay(2600)
+                // Update stats
+                // Can break if disassembled count is less than 12
+                if (equip.size < 12) {
+                    scriptStats.equipEnhancementsDone += 1
+                    break
+                }
+                // Wait for menu to settle
+                region.subRegion(791, 219, 1125, 441)
+                        .waitSuspending("research/select.png", 10)?.let {
+                            it.clickRandomly()
+                            delay(750)
+                        }
+                if (region.has("close.png")) {
+                    break
+                }
+            }
         }
+
+        delay(500)
+
+        //Catch if you are completely out of fodder by the end of 3* enhancement
+        if (region.has("close.png")) {
+            logger.info("Out of Equipment, stopping enhancement")
+            region.subRegion(921, 718, 327, 172).find("close.png").clickRandomly(); delay(200)
+        } else {
+            val selectEquipButton = region.subRegion(479, 432, 240, 353)
+            // Click select equip
+            selectEquipButton.clickRandomly(); delay(500)
+
+            while (isActive) {
+                statUpdateJobs += updateEquip(region.subRegion(1750, 515, 290, 70).takeScreenshot()) { count ->
+                    val c = count[0].toInt()
+                    oldEquipCount?.get(0)?.toIntOrNull()?.let {
+                        equipsUsedForEnhancement.getAndAdd(it - c)
+                    }
+                    oldEquipCount = count
+                    c >= count[1].toInt()
+                }
+
+                logger.info("Selecting first available equip for enhancement")
+                // Selects the 1st equip on the screen for enhancement
+                while (isActive) {
+                    val equip = region.findAllOrEmpty("research/5star.png")
+                            .also { logger.info("Found ${it.size} equips on screen available for enhancement") }
+                            // Map lock region to doll region
+                            .map { region.subRegion(it.x - 104, it.y, 244, 432) }
+                            // Prioritize higher level dolls
+                            .sortedBy { it.y * 10 + it.x }
+                            .firstOrNull()
+                    if (equip == null) {
+                        logger.info("No equipments that can be enhanced found")
+                        // Click cancel
+                        region.subRegion(120, 0, 205, 144).clickRandomly()
+                        return
+                    } else {
+                        equip.clickRandomly()
+                        break
+                    }
+                }
+
+                // Click "Select Equip" button
+                logger.info("Finding 4 star enhancement fodder")
+                region.subRegion(791, 219, 1125, 441).findOrNull("research/select.png")?.clickRandomly()
+                delay(750)
+
+                logger.info("Applying filters")
+                applyEquipFilters(4)
+                delay(750)
+
+                val equip = region.findAllOrEmpty("research/4star.png")
+                        .also { logger.info("Found ${it.size} that can be enhanced") }
+                        .map { region.subRegion(it.x - 104, it.y, 244, 432) }
+
+                // Select all the equips
+                region.mouseDelay(0.0) {
+                    equip.sortedBy { it.y * 10 + it.x }.forEach { it.clickRandomly() }
+                }
+                // Click ok
+                logger.info("Confirming Selection")
+                region.subRegion(1767, 880, 252, 185).find("research/ok.png").clickRandomly(); yield()
+                // Click ok button
+                logger.info("Confirming enhancement")
+                region.subRegion(1723, 913, 214, 82).clickRandomly(); delay(2600)
+                // Click confirm
+                logger.info("Selecting Confirm button")
+                region.subRegion(1100, 688, 324, 161).find("confirm.png").clickRandomly(); delay(200)
+                // Update stats
+                // Can break if disassembled count is less than 12
+                if (equip.size < 12) {
+                    scriptStats.equipEnhancementsDone += 1
+                    break
+                }
+                // Wait for menu to settle
+                region.subRegion(791, 219, 1125, 441)
+                        .waitSuspending("research/select.png", 10)?.let {
+                            it.clickRandomly()
+                            delay(750)
+                        }
+                if (region.has("close.png")) {
+                    logger.info("Out of 4 star equipment to enhance, stopping enhancement")
+                    region.subRegion(912, 718, 327, 172).find("close.png").clickRandomly(); delay(200)
+                    break
+                }
+            }
+        }
+
 
         // Update stats after all the update jobs are complete
         launch {
@@ -257,4 +337,5 @@ class ResearchModule(
         }
     }
 }
+
 
