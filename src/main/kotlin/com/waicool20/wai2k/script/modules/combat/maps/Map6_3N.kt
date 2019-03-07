@@ -45,7 +45,7 @@ class Map6_3N(
         waitForGNKSplash()
         planPath()
         waitForTurnEnd(2)
-        waitForGNKSplash(20)
+        waitForGNKSplash(30)
         deployEchelons(
                 HELIPORT to region.subRegion(1277, 578, 60, 60)
         )
@@ -55,7 +55,7 @@ class Map6_3N(
         retreatEchelon(HELIPORT, region.subRegion(1277, 578, 60, 60))
         delay(1500)
         deploy2ndEchelon()
-        delay(500)
+        delay(800)
         switchDolls()
         retreatEchelon(HELIPORT, region.subRegion(1277, 578, 60, 60))
         delay(1000)
