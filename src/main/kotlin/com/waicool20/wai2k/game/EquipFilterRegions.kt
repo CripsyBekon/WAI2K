@@ -28,6 +28,12 @@ class EquipFilterRegions(region: AndroidRegion) {
     val filter = region.subRegion(1791, 192, 193, 121)
 
     /**
+     *  'Filter By' button in the enhancement target screen, underneath the apply button
+     */
+
+    val secondFilter = region.subRegion(1767,346, 255, 163 )
+
+    /**
      * Map of 1-5 star rating and their regions
      */
     val starRegions = mapOf(

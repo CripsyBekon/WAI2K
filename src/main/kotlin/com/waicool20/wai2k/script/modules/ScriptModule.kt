@@ -54,6 +54,7 @@ abstract class ScriptModule(
     protected val dollFilterRegions by lazy { DollFilterRegions(region) }
     protected val equipFilterRegions by lazy { EquipFilterRegions(region) }
 
+
     /**
      * Applies the given corresponding doll filters, only works when the filter button
      * is on screen. ( eg. Formation/Enhancement/Disassemble screens )
@@ -90,6 +91,11 @@ abstract class ScriptModule(
 
     /**
      *
+     * Applies the given corresponding equipment filters, only works for filtering enhancement fodders
+     * in Equipment Enhancement
+     *
+     * @param stars No. of stars, null if you don't care (Default)
+     * @param reset Resets filters first before applying the filters
      */
 
     protected suspend fun applyEquipFilters(stars: Int? = null, reset: Boolean = false) {
@@ -111,6 +117,39 @@ abstract class ScriptModule(
 
             logger.info("Confirming filters")
             equipFilterRegions.confirm.clickRandomly(); yield()
+        }
+    }
+
+    /**
+     *
+     * Applies the given corresponding equipment filters, only works when the filter button
+     * is on screen and BELOW the sort by button. ( eg. Equipment Enhancement, when choosing a enhancement target,
+     * or in Equipment Disassembly)
+     *
+     * @param stars No. of stars, null if you don't care (Default)
+     * @param reset Resets filters first before applying the filters
+     */
+
+    protected suspend fun applyEnhanceEquipFilters(stars: Int? = null, reset: Boolean = false) {
+        if (stars == null && !reset) return
+        region.mouseDelay(0.0) {
+
+            if (reset) {
+                logger.info("Resetting filters")
+                equipFilterRegions.secondFilter.clickRandomly()
+                delay(500)
+                equipFilterRegions.reset.clickRandomly(); yield()
+                delay(500)
+            }
+            if (stars != null) {
+                equipFilterRegions.secondFilter.clickRandomly()
+                delay(500)
+                logger.info("Applying $stars stars filter")
+                equipFilterRegions.starRegions[stars]?.clickRandomly(); yield()
+                logger.info("Confirming filters")
+                equipFilterRegions.confirm.clickRandomly(); yield()
+            }
+            logger.info("Application Complete")
         }
     }
 
