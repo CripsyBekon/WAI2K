@@ -68,7 +68,6 @@ class CombatModule(
         if (!profile.combat.enabled) return
         // Return if the base doll limit is already reached
         if (gameState.dollOverflow) return
-        runCombatCycle()
         if (gameState.equipOverflow) return
         runCombatCycle()
     }
